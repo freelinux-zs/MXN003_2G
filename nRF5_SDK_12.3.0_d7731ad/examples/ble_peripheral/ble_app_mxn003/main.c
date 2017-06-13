@@ -85,6 +85,7 @@
 #include "nrf_log.h"
 #include "nrf_log_ctrl.h"
 #include "ble_lbs.h"
+#include "mxn003_cmd.h"
 
 #define IS_SRVC_CHANGED_CHARACT_PRESENT 1                                           /**< Include or not the service_changed characteristic. if not enabled, the server's database cannot be changed for the lifetime of the device*/
 
@@ -810,7 +811,7 @@ int main(void)
     // Initialize.
     err_code = NRF_LOG_INIT(NULL);
     APP_ERROR_CHECK(err_code);
-
+		uart_init();
     timers_init();
     buttons_leds_init(&erase_bonds);
     ble_stack_init();
