@@ -133,8 +133,6 @@ static ble_lbs_t                        m_lbs;                                  
    static ble_yy_service_t                     m_yys;
  */
 
-// YOUR_JOB: Use UUIDs for service(s) used in your application.
-static ble_uuid_t m_adv_uuids[] = {{BLE_UUID_DEVICE_INFORMATION_SERVICE, BLE_UUID_TYPE_BLE}}; /**< Universally unique service identifiers. */
 
 static void advertising_start(void);
 
@@ -347,7 +345,7 @@ static void gap_params_init(void)
  * @param[in] led_state Written/desired state of the LED.
  */
 static void led_write_handler(ble_lbs_t * p_lbs, uint8_t led_state){
-
+	printf("led_state = %d\r\n",led_state);
 }
 	
 /**@brief Function for initializing services that will be used by the application.
@@ -358,7 +356,6 @@ static void services_init(void)
 		ble_lbs_init_t init;
 
 		init.led_write_handler = led_write_handler;
-
 		err_code = ble_lbs_init(&m_lbs, &init);
 		APP_ERROR_CHECK(err_code);
 }
@@ -588,6 +585,7 @@ static void ble_evt_dispatch(ble_evt_t * p_ble_evt)
        ble_xxs_on_ble_evt(&m_xxs, p_ble_evt);
        ble_yys_on_ble_evt(&m_yys, p_ble_evt);
      */
+    ble_lbs_on_ble_evt(&m_lbs, p_ble_evt);
 }
 
 
@@ -700,11 +698,10 @@ static void peer_manager_init(bool erase_bonds)
 static void bsp_event_handler(bsp_event_t event)
 {
     uint32_t err_code;
-
     switch (event)
     {
         case BSP_EVENT_SLEEP:
-            sleep_mode_enter();
+           // sleep_mode_enter();
             break; // BSP_EVENT_SLEEP
 
         case BSP_EVENT_DISCONNECT:
@@ -739,23 +736,29 @@ static void advertising_init(void)
 {
     uint32_t               err_code;
     ble_advdata_t          advdata;
+		ble_advdata_t 				 scanrsp;
     ble_adv_modes_config_t options;
 
+    ble_uuid_t adv_uuids[] = {{LBS_UUID_SERVICE, m_lbs.uuid_type}};
     // Build advertising data struct to pass into @ref ble_advertising_init.
     memset(&advdata, 0, sizeof(advdata));
 
     advdata.name_type               = BLE_ADVDATA_FULL_NAME;
     advdata.include_appearance      = true;
     advdata.flags                   = BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE;
-    advdata.uuids_complete.uuid_cnt = sizeof(m_adv_uuids) / sizeof(m_adv_uuids[0]);
-    advdata.uuids_complete.p_uuids  = m_adv_uuids;
+
+
+    memset(&scanrsp, 0, sizeof(scanrsp));
+    scanrsp.uuids_complete.uuid_cnt = sizeof(adv_uuids) / sizeof(adv_uuids[0]);
+    scanrsp.uuids_complete.p_uuids  = adv_uuids;
+	
 
     memset(&options, 0, sizeof(options));
     options.ble_adv_fast_enabled  = true;
     options.ble_adv_fast_interval = APP_ADV_INTERVAL;
     options.ble_adv_fast_timeout  = APP_ADV_TIMEOUT_IN_SECONDS;
 
-    err_code = ble_advertising_init(&advdata, NULL, &options, on_adv_evt, NULL);
+    err_code = ble_advertising_init(&advdata,  NULL, &options, on_adv_evt, NULL);
     APP_ERROR_CHECK(err_code);
 }
 
@@ -768,7 +771,7 @@ static void buttons_leds_init(bool * p_erase_bonds)
 {
     bsp_event_t startup_event;
 
-    uint32_t err_code = bsp_init(BSP_INIT_LED | BSP_INIT_BUTTONS,
+    uint32_t err_code = bsp_init(BSP_INIT_LED | BSP_INIT_BUTTONS, //
                                  APP_TIMER_TICKS(100, APP_TIMER_PRESCALER),
                                  bsp_event_handler);
 
@@ -811,7 +814,7 @@ int main(void)
     // Initialize.
     err_code = NRF_LOG_INIT(NULL);
     APP_ERROR_CHECK(err_code);
-		uart_init();
+    uart_init();
     timers_init();
     buttons_leds_init(&erase_bonds);
     ble_stack_init();
