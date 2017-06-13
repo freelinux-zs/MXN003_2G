@@ -74,6 +74,8 @@
   #include "arduino_primo.h"
 #elif defined(BOARD_CUSTOM)
   #include "custom_board.h"
+#elif defined(BOARD_MXN003)
+  #include "mxn003.h"
 #else
 #error "Board is not defined"
 
