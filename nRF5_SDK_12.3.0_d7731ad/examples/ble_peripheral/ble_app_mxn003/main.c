@@ -100,6 +100,7 @@
 
 #define DEVICE_NAME                     "MXN003"                           /**< Name of device. Will be included in the advertising data. */
 #define MANUFACTURER_NAME               "NordicSemiconductor"                       /**< Manufacturer. Will be passed to Device Information Service. */
+#define LBS_SERVICE_UUID_TYPE           BLE_UUID_TYPE_BLE                  /**< UUID type for the Nordic UART Service (vendor specific). */
 #define APP_ADV_INTERVAL                640                                         /**< The advertising interval (in units of 0.625 ms. This value corresponds to 187.5 ms). */
 #define APP_ADV_TIMEOUT_IN_SECONDS      0 //180                                         /**< The advertising timeout in units of seconds. */
 
@@ -125,9 +126,10 @@
 #define SEC_PARAM_MAX_KEY_SIZE          16                                          /**< Maximum encryption key size. */
 
 #define DEAD_BEEF                       0xDEADBEEF                                  /**< Value used as error code on stack dump, can be used to identify stack location on stack unwind. */
-#define TX_POWER_LEVEL                  (-20)                                         /**< TX Power Level value. This will be set both in the TX Power service, in the advertising data, and also used to set the radio transmit power. */
-static uint16_t m_conn_handle = BLE_CONN_HANDLE_INVALID;                            /**< Handle of the current connection. */
+static int8_t                           tx_power = -20;                              /**< TX Power Level value. This will be set both in the TX Power service, in the advertising data, and also used to set the radio transmit power. */
+static uint16_t 												m_conn_handle = BLE_CONN_HANDLE_INVALID;     /**< Handle of the current connection. */
 static ble_lbs_t                        m_lbs;                                      /**< LED Button Service instance. */
+static ble_uuid_t 											adv_uuids[] = {{LBS_UUID_SERVICE, LBS_SERVICE_UUID_TYPE}};
 /* YOUR_JOB: Declare all services structure your application is using
    static ble_xx_service_t                     m_xxs;
    static ble_yy_service_t                     m_yys;
@@ -309,7 +311,7 @@ static void gap_params_init(void)
     APP_ERROR_CHECK(err_code);
 																					
 	
-		err_code = sd_ble_gap_tx_power_set(TX_POWER_LEVEL);
+		err_code = sd_ble_gap_tx_power_set(tx_power);
     APP_ERROR_CHECK(err_code);
 }
 
@@ -698,7 +700,7 @@ static void peer_manager_init(bool erase_bonds)
 static void bsp_event_handler(bsp_event_t event)
 {
     uint32_t err_code;
-		printf("event = %d\r\n",event);
+   printf("event = %d\r\n",event);
   switch(event)
   {
   	case BSP_EVENT_KEY_0:
@@ -768,15 +770,23 @@ static void advertising_init(void)
 		ble_advdata_t 				 scanrsp;
     ble_adv_modes_config_t options;
 
-    ble_uuid_t adv_uuids[] = {{LBS_UUID_SERVICE, m_lbs.uuid_type}};
+
+		ble_advdata_manuf_data_t manuf_data; // Variable to hold manufacturer specific data
+    uint8_t data[]                  = DEVICE_NAME; // Our data to adverise
+    manuf_data.company_identifier   = 0x0059; //Nordics company ID
+    manuf_data.data.p_data          = data;
+    manuf_data.data.size            = sizeof(data);
+	
     // Build advertising data struct to pass into @ref ble_advertising_init.
     memset(&advdata, 0, sizeof(advdata));
 
     advdata.name_type               = BLE_ADVDATA_FULL_NAME;
     advdata.include_appearance      = true;
     advdata.flags                   = BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE;
-
-
+		advdata.p_tx_power_level        = &tx_power;
+		advdata.p_manuf_specific_data   = &manuf_data; 
+	
+	
     memset(&scanrsp, 0, sizeof(scanrsp));
     scanrsp.uuids_complete.uuid_cnt = sizeof(adv_uuids) / sizeof(adv_uuids[0]);
     scanrsp.uuids_complete.p_uuids  = adv_uuids;
@@ -787,7 +797,7 @@ static void advertising_init(void)
     options.ble_adv_fast_interval = APP_ADV_INTERVAL;
     options.ble_adv_fast_timeout  = APP_ADV_TIMEOUT_IN_SECONDS;
 
-    err_code = ble_advertising_init(&advdata,  NULL, &options, on_adv_evt, NULL);
+    err_code = ble_advertising_init(&advdata, &scanrsp, &options, on_adv_evt, NULL);
     APP_ERROR_CHECK(err_code);
 }
 
