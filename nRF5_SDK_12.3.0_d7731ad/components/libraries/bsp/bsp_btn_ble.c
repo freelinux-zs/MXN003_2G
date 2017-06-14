@@ -156,19 +156,15 @@ static uint32_t advertising_buttons_configure()
 {
     uint32_t err_code;
 
-    err_code = bsp_event_to_button_action_assign(BTN_ID_DISCONNECT,
-                                                 BTN_ACTION_DISCONNECT,
-                                                 BSP_EVENT_DEFAULT);
+
+    err_code = bsp_event_to_button_action_assign(1,
+                                                 BSP_BUTTON_ACTION_RELEASE,
+                                                 BSP_EVENT_KEY_1_RELEASE);  //7
     RETURN_ON_ERROR_NOT_INVALID_PARAM(err_code);
 
-    err_code = bsp_event_to_button_action_assign(BTN_ID_WHITELIST_OFF,
-                                                 BTN_ACTION_WHITELIST_OFF,
-                                                 BSP_EVENT_WHITELIST_OFF);
-    RETURN_ON_ERROR_NOT_INVALID_PARAM(err_code);
-
-    err_code = bsp_event_to_button_action_assign(BTN_ID_SLEEP,
-                                                 BTN_ACTION_SLEEP,
-                                                 BSP_EVENT_SLEEP);
+    err_code = bsp_event_to_button_action_assign(0,
+                                                 BSP_BUTTON_ACTION_RELEASE,
+                                                 BSP_EVENT_KEY_0_RELEASE);  // 10
     RETURN_ON_ERROR_NOT_INVALID_PARAM(err_code);
 
     return NRF_SUCCESS;
