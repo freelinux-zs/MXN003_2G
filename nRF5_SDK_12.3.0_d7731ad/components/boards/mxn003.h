@@ -47,25 +47,25 @@ extern "C" {
 #include "nrf_gpio.h"
 
 // LEDs definitions for PCA10028
-#define LEDS_NUMBER    4
+#define LEDS_NUMBER    2
 
-#define LED_START      21
-#define LED_1          21
-#define LED_2          22
-#define LED_3          23
-#define LED_4          24
-#define LED_STOP       24
+#define LED_START      12
+#define LED_1          12
+#define LED_2          13
+//#define LED_3          23
+//#define LED_4          24
+#define LED_STOP       13
 
-#define LEDS_ACTIVE_STATE 0
+#define LEDS_ACTIVE_STATE 1
 
-#define LEDS_LIST { LED_1, LED_2, LED_3, LED_4 }
+#define LEDS_LIST { LED_1, LED_2}//, LED_3, LED_4 }
 
 #define LEDS_INV_MASK  LEDS_MASK
 
 #define BSP_LED_0      LED_1
 #define BSP_LED_1      LED_2
-#define BSP_LED_2      LED_3
-#define BSP_LED_3      LED_4
+//#define BSP_LED_2      LED_3
+//#define BSP_LED_3      LED_4
 
 #define BUTTONS_NUMBER 4
 
