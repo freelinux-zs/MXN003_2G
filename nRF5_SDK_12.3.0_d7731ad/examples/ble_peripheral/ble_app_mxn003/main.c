@@ -700,23 +700,22 @@ static void peer_manager_init(bool erase_bonds)
 static void bsp_event_handler(bsp_event_t event)
 {
     uint32_t err_code;
-   printf("event = %d\r\n",event);
   switch(event)
   {
-  	case BSP_EVENT_KEY_0:
-		printf("key_0 push\r\n");
-		break;
-	 case BSP_EVENT_KEY_0_RELEASE:
-		printf("key_0 release\r\n");
-		break;
-  	case BSP_EVENT_KEY_1:
-		printf("key_1 push\r\n");
-		break;
-	 case BSP_EVENT_KEY_1_RELEASE:
-		printf("key_1 release\r\n");
-		break;
-	 default:
-            break;
+		case BSP_EVENT_KEY_0:
+			printf("key_0 push\r\n");
+			break;
+		case BSP_EVENT_KEY_0_RELEASE:
+			printf("key_0 release\r\n");
+			break;
+		case BSP_EVENT_KEY_1:
+			printf("key_1 push\r\n");
+			break;
+		case BSP_EVENT_KEY_1_RELEASE:
+			printf("key_1 release\r\n");
+			break;
+		default:
+			break;
   }
 
   err_code = ble_lbs_on_button_change(&m_lbs, 0xbb);
@@ -810,7 +809,7 @@ static void buttons_leds_init(bool * p_erase_bonds)
 {
     bsp_event_t startup_event;
 
-    uint32_t err_code = bsp_init(BSP_INIT_LED | BSP_INIT_BUTTONS, //
+    uint32_t err_code = bsp_init(BSP_INIT_LED | BSP_INIT_BUTTONS,
                                  APP_TIMER_TICKS(100, APP_TIMER_PRESCALER),
                                  bsp_event_handler);
 
