@@ -6,6 +6,7 @@
 #define UART_TX_BUF_SIZE                256                                         /**< UART TX buffer size. */
 #define UART_RX_BUF_SIZE                1                                         /**< UART RX buffer size. */
 
+
 void LED(CMD_DATA_STRUCT *cmd)
 {
 		printf(" \r\n len:%d, data:%s   [%d]%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|\r\n",
@@ -19,6 +20,7 @@ void LCD(CMD_DATA_STRUCT *cmd)
           cmd->rcv_length, cmd->rcv_msg_source, cmd->part, cmd->pars[0], cmd->pars[1], cmd->pars[2], cmd->pars[3], cmd->pars[4],
            cmd->pars[5], cmd->pars[6], cmd->pars[7]);
 }
+
 
 static cust_recv_struct logic_cmd_table[] =
 {
@@ -409,4 +411,17 @@ void uart_init(void)
                        APP_IRQ_PRIORITY_LOWEST,
                        err_code);
     APP_ERROR_CHECK(err_code);
+}
+
+void uart_onoff(int8_t on)
+{
+	if(1 == on){
+	 NRF_UART0->ENABLE        = (UART_ENABLE_ENABLE_Enabled << UART_ENABLE_ENABLE_Pos);
+   NRF_UART0->TASKS_STARTRX = 1;
+   NRF_UART0->TASKS_STARTTX = 1;
+	}else{
+		NRF_UART0->TASKS_STOPTX = 1;
+		NRF_UART0->TASKS_STOPRX = 1;
+		NRF_UART0->ENABLE       = (UART_ENABLE_ENABLE_Disabled << UART_ENABLE_ENABLE_Pos);
+	}
 }

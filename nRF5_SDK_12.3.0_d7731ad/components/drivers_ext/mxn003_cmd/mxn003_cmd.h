@@ -88,5 +88,6 @@ typedef struct
 
 
 extern void uart_init(void);
+extern void uart_onoff(int8_t on);
 #endif
 
