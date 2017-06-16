@@ -12,6 +12,12 @@ void LED(CMD_DATA_STRUCT *cmd)
 		printf(" \r\n len:%d, data:%s   [%d]%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|\r\n",
           cmd->rcv_length, cmd->rcv_msg_source, cmd->part, cmd->pars[0], cmd->pars[1], cmd->pars[2], cmd->pars[3], cmd->pars[4],
            cmd->pars[5], cmd->pars[6], cmd->pars[7],cmd->pars[8],cmd->pars[9]);
+		if(strcmp(cmd->pars[0], "1"))
+		{
+				if(strcmp(cmd->pars[1], "ON")){
+					nrf_gpio_pin_toggle(LED_2);
+				}
+		}
 }
 
 void LCD(CMD_DATA_STRUCT *cmd)

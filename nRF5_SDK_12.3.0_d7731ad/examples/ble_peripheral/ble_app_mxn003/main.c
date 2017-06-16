@@ -712,21 +712,25 @@ static void bsp_event_handler(bsp_event_t event)
 	按键 2 3
 	电机检测
 	*/
-	
 	switch(event){
 		case BSP_EVENT_KEY_0:
+			/*MT2503 已关机*/
 			break;
 		case BSP_EVENT_KEY_0_RELEASE:
 			/*MT2503 开机完成 开启UART功能*/
 			uart_onoff(1);
 			break;
 		case BSP_EVENT_KEY_1:
+			status = 1;
 			break;
 		case BSP_EVENT_KEY_1_RELEASE:
+			status = 1;
 			break;
 		case BSP_EVENT_KEY_2:
+			status = 1;
 			break;
 		case BSP_EVENT_KEY_2_RELEASE:
+			status = 1;
 			break;
 		default:
 			break;
@@ -734,7 +738,7 @@ static void bsp_event_handler(bsp_event_t event)
 	}
 	
 	if(status){  /*通过蓝牙上报电机状态*/
-	  err_code = ble_lbs_on_button_change(&m_lbs, 0xbb);
+	  err_code = ble_lbs_on_button_change(&m_lbs, status);
             if (err_code != NRF_SUCCESS &&
                 err_code != BLE_ERROR_INVALID_CONN_HANDLE &&
                 err_code != NRF_ERROR_INVALID_STATE)
