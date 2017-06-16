@@ -87,6 +87,7 @@
 #include "ble_lbs.h"
 #include "mxn003_cmd.h"
 #include "adc_interface.h"
+#include "modem_2g.h"
 
 #define IS_SRVC_CHANGED_CHARACT_PRESENT 1                                           /**< Include or not the service_changed characteristic. if not enabled, the server's database cannot be changed for the lifetime of the device*/
 
@@ -837,6 +838,7 @@ int main(void)
     // Initialize.
     err_code = NRF_LOG_INIT(NULL);
     APP_ERROR_CHECK(err_code);
+		modem_2g_init(MODEM_2G_PIN_NUMBER);  //初始化2G控制模块IO
     uart_init();
 		uart_onoff(0);  //默认关闭UART功能
     timers_init();
