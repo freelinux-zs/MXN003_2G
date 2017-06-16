@@ -137,6 +137,11 @@ static uint32_t connection_buttons_configure()
                                                  BSP_BUTTON_ACTION_RELEASE,
                                                  BSP_EVENT_KEY_0_RELEASE);  // 10
     RETURN_ON_ERROR_NOT_INVALID_PARAM(err_code);
+	
+	    err_code = bsp_event_to_button_action_assign(2,
+                                                 BSP_BUTTON_ACTION_RELEASE,
+                                                 BSP_EVENT_KEY_2_RELEASE);  // 10
+    RETURN_ON_ERROR_NOT_INVALID_PARAM(err_code);
 	#else
     err_code = bsp_event_to_button_action_assign(BTN_ID_SLEEP,
                                                  BTN_ACTION_SLEEP,
@@ -178,6 +183,11 @@ static uint32_t advertising_buttons_configure()
                                                  BSP_EVENT_KEY_0_RELEASE);  // 10
     RETURN_ON_ERROR_NOT_INVALID_PARAM(err_code);
 
+	    err_code = bsp_event_to_button_action_assign(2,
+                                                 BSP_BUTTON_ACTION_RELEASE,
+                                                 BSP_EVENT_KEY_2_RELEASE);  // 10
+    RETURN_ON_ERROR_NOT_INVALID_PARAM(err_code);
+	
     return NRF_SUCCESS;
 }
 

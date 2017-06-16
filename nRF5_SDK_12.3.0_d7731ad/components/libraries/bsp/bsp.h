@@ -175,7 +175,8 @@ typedef enum
     BSP_EVENT_KEY_7,                        /**< Default event of the push action of BSP_BUTTON_7 (only if this button is present). */
     BSP_EVENT_KEY_0_RELEASE,
     BSP_EVENT_KEY_1_RELEASE,
-    BSP_EVENT_KEY_LAST = BSP_EVENT_KEY_1_RELEASE,
+		BSP_EVENT_KEY_2_RELEASE,
+    BSP_EVENT_KEY_LAST = BSP_EVENT_KEY_2_RELEASE,
 } bsp_event_t;
 
 

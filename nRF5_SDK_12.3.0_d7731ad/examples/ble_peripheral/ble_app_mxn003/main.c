@@ -86,6 +86,7 @@
 #include "nrf_log_ctrl.h"
 #include "ble_lbs.h"
 #include "mxn003_cmd.h"
+#include "adc_interface.h"
 
 #define IS_SRVC_CHANGED_CHARACT_PRESENT 1                                           /**< Include or not the service_changed characteristic. if not enabled, the server's database cannot be changed for the lifetime of the device*/
 
@@ -699,64 +700,48 @@ static void peer_manager_init(bool erase_bonds)
  */
 static void bsp_event_handler(bsp_event_t event)
 {
-    uint32_t err_code;
-  switch(event)
-  {
+  uint32_t err_code;
+	printf("envnt = %d\r\n",event);
+	uint8_t status = 0;
+	/*
+	按键 1 开机状态检测；
+	BSP_EVENT_KEY_0----14 低电平
+	BSP_EVENT_KEY_0_RELEASE  ---- 22 高电平
+	
+	按键 2 3
+	电机检测
+	*/
+	
+	switch(event){
 		case BSP_EVENT_KEY_0:
-			printf("key_0 push\r\n");
 			break;
 		case BSP_EVENT_KEY_0_RELEASE:
-			printf("key_0 release\r\n");
+			/*MT2503 开机完成 开启UART功能*/
+			uart_onoff(1);
 			break;
 		case BSP_EVENT_KEY_1:
-			printf("key_1 push\r\n");
 			break;
 		case BSP_EVENT_KEY_1_RELEASE:
-			printf("key_1 release\r\n");
+			break;
+		case BSP_EVENT_KEY_2:
+			break;
+		case BSP_EVENT_KEY_2_RELEASE:
 			break;
 		default:
 			break;
-  }
-
-  err_code = ble_lbs_on_button_change(&m_lbs, 0xbb);
+		
+	}
+	
+	if(status){  /*通过蓝牙上报电机状态*/
+	  err_code = ble_lbs_on_button_change(&m_lbs, 0xbb);
             if (err_code != NRF_SUCCESS &&
                 err_code != BLE_ERROR_INVALID_CONN_HANDLE &&
                 err_code != NRF_ERROR_INVALID_STATE)
             {
                 APP_ERROR_CHECK(err_code);
             }
-			
-		#if 0
-    switch (event)
-    {
-        case BSP_EVENT_SLEEP:
-           // sleep_mode_enter();
-            break; // BSP_EVENT_SLEEP
-
-        case BSP_EVENT_DISCONNECT:
-            err_code = sd_ble_gap_disconnect(m_conn_handle,
-                                             BLE_HCI_REMOTE_USER_TERMINATED_CONNECTION);
-            if (err_code != NRF_ERROR_INVALID_STATE)
-            {
-                APP_ERROR_CHECK(err_code);
-            }
-            break; // BSP_EVENT_DISCONNECT
-
-        case BSP_EVENT_WHITELIST_OFF:
-            if (m_conn_handle == BLE_CONN_HANDLE_INVALID)
-            {
-                err_code = ble_advertising_restart_without_whitelist();
-                if (err_code != NRF_ERROR_INVALID_STATE)
-                {
-                    APP_ERROR_CHECK(err_code);
-                }
-            }
-            break; // BSP_EVENT_KEY_0
-
-        default:
-            break;
-    }
-		#endif
+	}
+	
 }
 
 
@@ -853,6 +838,7 @@ int main(void)
     err_code = NRF_LOG_INIT(NULL);
     APP_ERROR_CHECK(err_code);
     uart_init();
+		uart_onoff(0);  //默认关闭UART功能
     timers_init();
     buttons_leds_init(&erase_bonds);
     ble_stack_init();
