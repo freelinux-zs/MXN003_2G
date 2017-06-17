@@ -88,6 +88,7 @@
 #include "mxn003_cmd.h"
 #include "adc_interface.h"
 #include "modem_2g.h"
+#include "buzz_pwm.h"
 
 #define IS_SRVC_CHANGED_CHARACT_PRESENT 1                                           /**< Include or not the service_changed characteristic. if not enabled, the server's database cannot be changed for the lifetime of the device*/
 
@@ -896,6 +897,7 @@ int main(void)
     uart_init();    //³õÊ¼»¯UART
 		uart_onoff(0);  //¹Ø±ÕUART
     timers_init();
+		//buzz_pwm_init();
     buttons_leds_init(&erase_bonds);
     ble_stack_init();
     peer_manager_init(erase_bonds);
