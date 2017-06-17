@@ -86,10 +86,13 @@ extern "C" {
 #define BSP_BUTTON_2   BUTTON_3
 //#define BSP_BUTTON_3   BUTTON_4
 
-#define MODEM_2G_PIN_NUMBER 10
+#define MODEM_2G_PIN_NUMBER 18 //10
 
 #define RX_PIN_NUMBER  9 
 #define TX_PIN_NUMBER  8  
+//#define RX_PIN_NUMBER  11
+//#define TX_PIN_NUMBER  9  
+
 #define CTS_PIN_NUMBER 0xFF
 #define RTS_PIN_NUMBER 0xFF
 #define HWFC           true
