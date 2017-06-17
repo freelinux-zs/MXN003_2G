@@ -349,7 +349,56 @@ static void gap_params_init(void)
  * @param[in] led_state Written/desired state of the LED.
  */
 static void led_write_handler(ble_lbs_t * p_lbs, uint8_t led_state){
-	printf("led_state = %d\r\n",led_state);
+	switch(led_state) {
+		case 1:
+				modem_2g_open();  //打开模块
+				break;
+		case 2:
+				modem_2g_close();  //关闭模块
+				break;
+		case 3:
+				uart_onoff(1);  //打开UART
+				break;
+		case 4:
+				uart_onoff(0);  //关闭UART
+				break;
+		case 5:
+				start_read_adc();  //读取ADC
+				break;
+		case 6:
+				printf("AT+MOD=OPEN\r\n");  //发送AT命令
+				break;
+		case 7:
+					//打开电机
+				break;
+		case 8:
+				//关闭电机
+				break;
+		case 9:
+				//蜂蜜器
+			break;
+		case 10:
+			break;
+		default:
+        break;
+	}
+	#if 0
+	if(1 == led_state){
+		/*打开2G模块*/
+		modem_2g_open();
+	}else if (2== led_state){
+	/*关闭2G模块*/
+		modem_2g_close();
+	}else if(3 == led_state){
+	/*读取电池电压*/
+		start_read_adc();
+	}else if(4 == led_state){
+		/*开启UART*/
+		uart_onoff(1);
+	}else if(5 == led_state){
+		printf("AT+MOD=OPEN\r\n");
+	}
+	#endif
 }
 	
 /**@brief Function for initializing services that will be used by the application.
@@ -842,9 +891,10 @@ int main(void)
     // Initialize.
     err_code = NRF_LOG_INIT(NULL);
     APP_ERROR_CHECK(err_code);
-		modem_2g_init(MODEM_2G_PIN_NUMBER);  //初始化2G控制模块IO
-    uart_init();
-		uart_onoff(0);  //默认关闭UART功能
+		modem_2g_init();  //初始化2G控制模块IO
+		adc_config_init();  //初始化ADC
+    uart_init();    //初始化UART
+		uart_onoff(0);  //关闭UART
     timers_init();
     buttons_leds_init(&erase_bonds);
     ble_stack_init();
