@@ -59,7 +59,8 @@
 #include "bsp.h"
 #include "app_uart.h"
 #include <stdarg.h>
-#include "modem_interface.h"
+//#include "modem_interface.h"
+#include "interface.h"
 
 
 #define UART_TX_BUF_SIZE                256                                         /**< UART TX buffer size. */

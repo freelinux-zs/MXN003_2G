@@ -11,7 +11,7 @@ void init_uart(void);
 void uart_enable(bool status);
 
 
-bool mt2503_custom_common_hdlr(char *full_cmd_string);
+
 
 #ifdef __cplusplus
 }

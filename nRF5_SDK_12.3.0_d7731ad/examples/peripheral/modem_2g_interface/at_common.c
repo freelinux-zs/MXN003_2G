@@ -18,7 +18,6 @@ typedef struct
 custom_cmd_mode_enum custom_find_cmd_mode(custom_cmdLine *cmd_line)
 {
     custom_cmd_mode_enum result;
-		uart_putbyte("cmd_line->position = %d, cmd_line->length = %d",cmd_line->position,cmd_line->length);
    // if (cmd_line->position < cmd_line->length - 1) //modfiy by xuzhoubin for no '\r\n'
 		if (cmd_line->position < cmd_line->length)
     {
@@ -213,7 +212,7 @@ cmd_data_struct at_get_at_para(custom_cmdLine *commandBuffer_p)
 
 			at_cmd.rcv_length = commandBuffer_p->length;
 			at_cmd.position   = commandBuffer_p->position;
-			uart_putbyte("at_cmd.rcv_length= %d ,at_cmd.position  = %d ,at_cmd.rcv_msg = %s",at_cmd.rcv_length,at_cmd.position,at_cmd.rcv_msg);
+
 			cmd_analyse(&at_cmd);
 		}
 		return at_cmd;
@@ -253,7 +252,8 @@ static custom_rsp_type_enum custom_test_func(custom_cmdLine *commandBuffer_p)
 const custom_atcmd custom_cmd_table[ ] =
 {    
     {"AT%CUSTOM",custom_test_func},
-		{"AT+LED",cusotm_led_test_func},
+		//{"AT+LED",cusotm_led_test_func},
+		{"AT+CAPN",ata_set_apn_return},
     {NULL, NULL}  // this lind should not be removed, it will be treat as 
 };
 
