@@ -6,7 +6,7 @@
 extern "C" {
 #endif
 
-//extern custom_rsp_type_enum cusotm_led_test_func(custom_cmdLine *commandBuffer_p);   
+extern custom_rsp_type_enum cusotm_led_test_func(custom_cmdLine *commandBuffer_p);   
 
 #ifdef __cplusplus
 }

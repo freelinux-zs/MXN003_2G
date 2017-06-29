@@ -15,11 +15,12 @@ typedef struct
 } custom_atcmd;
 
 
-static custom_cmd_mode_enum custom_find_cmd_mode(custom_cmdLine *cmd_line)
+custom_cmd_mode_enum custom_find_cmd_mode(custom_cmdLine *cmd_line)
 {
     custom_cmd_mode_enum result;
-
-    if (cmd_line->position < cmd_line->length - 1)
+		uart_putbyte("cmd_line->position = %d, cmd_line->length = %d",cmd_line->position,cmd_line->length);
+   // if (cmd_line->position < cmd_line->length - 1) //modfiy by xuzhoubin for no '\r\n'
+		if (cmd_line->position < cmd_line->length)
     {
         switch (cmd_line->character[cmd_line->position])
         {
@@ -83,7 +84,11 @@ static int fun_str_analyse(char *str_data, char **tar_data, int limit, char star
     {
         return -1;
     }
+
     len = strlen(str_data);
+		if(str_data[len - 1] == '\n'){
+			len = len - 2;  //add by xuzhoubin
+		}
     for(i = 0, j = 0, p = str_data; i < len; i++, p++)
     {
         if(status == 0 && (*p == startChar || startChar == NULL))
@@ -93,7 +98,7 @@ static int fun_str_analyse(char *str_data, char **tar_data, int limit, char star
             {
                 return -2;
             }
-            if(startChar == NULL)
+            if((startChar == NULL))
             {
                 tar_data[j++] = p;
             }
@@ -146,12 +151,14 @@ static int cmd_analyse(cmd_data_struct * command)
 	char        *data_ptr, split_ch = ',';
 	int         cmd_Len, par_len;
 	
+	
 	if(command == NULL || command->rcv_length < 1)
   {
         return -1;
   }
 	//fun_toUpper(command->rcv_msg);
 	data_ptr = &command->rcv_msg[command->position];//parse_sms_head(command->rcv_msg); 
+	
 	cmd_Len = strlen(data_ptr);
 
     if(data_ptr[cmd_Len - 3] == '#' && data_ptr[cmd_Len - 2] == 0x0D && data_ptr[cmd_Len - 1] == 0x0A)
@@ -170,7 +177,7 @@ static int cmd_analyse(cmd_data_struct * command)
    // {
         //LOGHEX(M_CMD, LV6, data_ptr, cmd_Len);
     //}
-
+			
 		par_len = fun_str_analyse(data_ptr, command->pars, COMMA_UNIT_MAX, NULL, "\r\n", split_ch);
 
     if(par_len > COMMA_UNIT_MAX || par_len <= 0)
@@ -196,9 +203,9 @@ static int cmd_analyse(cmd_data_struct * command)
 }
 
 
-static cmd_data_struct at_get_at_para(custom_cmdLine *commandBuffer_p)
+cmd_data_struct at_get_at_para(custom_cmdLine *commandBuffer_p)
 {
-		cmd_data_struct at_cmd = {0};
+		static cmd_data_struct at_cmd = {0};
 		if(commandBuffer_p->length && (commandBuffer_p->length <(COMMAND_LINE_SIZE + NULL_TERMINATOR_LENGTH)))
 		{
 			memset(&at_cmd, 0, sizeof(cmd_data_struct)); 
@@ -206,6 +213,7 @@ static cmd_data_struct at_get_at_para(custom_cmdLine *commandBuffer_p)
 
 			at_cmd.rcv_length = commandBuffer_p->length;
 			at_cmd.position   = commandBuffer_p->position;
+			uart_putbyte("at_cmd.rcv_length= %d ,at_cmd.position  = %d ,at_cmd.rcv_msg = %s",at_cmd.rcv_length,at_cmd.position,at_cmd.rcv_msg);
 			cmd_analyse(&at_cmd);
 		}
 		return at_cmd;
@@ -240,36 +248,12 @@ static custom_rsp_type_enum custom_test_func(custom_cmdLine *commandBuffer_p)
 }
 
 
-static custom_rsp_type_enum cusotm_lcm_func(custom_cmdLine *commandBuffer_p)
-{
-	custom_cmd_mode_enum result;
-	custom_rsp_type_enum ret_value	= CUSTOM_RSP_ERROR;
-	result = custom_find_cmd_mode(commandBuffer_p); 
-	cmd_data_struct cmd;
 
-	cmd = at_get_at_para(commandBuffer_p);
-	uart_putbyte("cusotm_lcm_func cmd.part =%d",cmd.part);
-	for(int m =0 ; m < cmd.part; m++)
-			uart_putbyte("cusotm_lcm_func =%s",cmd.pars[m]);
-	
-	switch (result)
-	{
-			case CUSTOM_READ_MODE:
-				ret_value = CUSTOM_RSP_OK;
-				break;
-			default:
-				ret_value = CUSTOM_RSP_ERROR;
-				break;
-	}
-	
-	return ret_value;
-}
 
 const custom_atcmd custom_cmd_table[ ] =
 {    
     {"AT%CUSTOM",custom_test_func},
-//		{"AT+LED",cusotm_led_test_func},
-		{"AT+LCM",cusotm_lcm_func},
+		{"AT+LED",cusotm_led_test_func},
     {NULL, NULL}  // this lind should not be removed, it will be treat as 
 };
 
